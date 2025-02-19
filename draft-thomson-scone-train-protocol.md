@@ -9,18 +9,18 @@ number:
 date:
 consensus: true
 v: 3
-# area: AREA
-# workgroup: WG Working Group
+area: "Web and Internet Transport"
+workgroup: SCONE
 keyword:
  - chugga chugga chugga chugga
  - mitm
 venue:
-#  group: WG
-#  type: Working Group
-#  mail: WG@example.com
-#  arch: https://example.com/WG
-  github: "martinthomson/train-protocol"
-  latest: "https://martinthomson.github.io/train-protocol/draft-thomson-train-protocol.html"
+  group: "SCONE"
+  type: "Working Group"
+  mail: "scone@ietf.org"
+  arch: "https://mailarchive.ietf.org/arch/browse/scone/"
+  github: "ietf-wg-scone/trone"
+  latest: "https://ietf-wg-scone/trone/draft-thomson-train-protocol.html"
 
 author:
  -
