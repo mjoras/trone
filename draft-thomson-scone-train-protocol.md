@@ -38,9 +38,13 @@ author:
     org: Fastly
     email: kazuhooku@gmail.com
  -
-    fullname: Jana Iyengar
-    org: Fastly
-    email: jri.ietf@gmail.com
+    fullname: Matt Joras
+    org: Meta
+    email: matt.joras@gmail.com
+-
+    fullname: Marcus Ihlar
+    org: Ericsson
+    email: marcus.ihlar@ericsson.com
 
 
 normative:
@@ -584,4 +588,4 @@ Notes:
 # Acknowledgments
 {:numbered="false"}
 
-TODO acknowledge.
+Jana Iyengar has made significant contributions to the original TRAIN specification.
