@@ -216,12 +216,13 @@ from {{Section 4 of INVARIANTS}}.
 TRAIN Packet {
   Header Form (1) = 1,
   Reserved (1),
-  Rate Signal (6),
+  Reserved (6),
   Version (32) = 0xTBD,
   Destination Connection ID Length (8),
   Destination Connection ID (0..2040),
   Source Connection ID Length (8),
   Source Connection ID (0..2040),
+  Rate Signal (64)
 }
 ~~~
 {: #fig-train-packet title="TRAIN Packet Format"}
@@ -230,9 +231,7 @@ The most significant bit (0x80) of the packet indicates that this is a QUIC long
 header packet.  The next bit (0x40) is reserved and can be set according to
 {{!QUIC-BIT=RFC9287}}.
 
-The entire payload of the TRAIN packet is carried in the Rate Signal field that
-forms the low 6 bits (0x3f) of the first byte.  Values for this field are
-described in {{rate-signal}}.
+The low 6 bits (0x3f) of the first byte are reserved.
 
 This packet includes a Destination Connection ID field that is set to the same
 value as other packets in the same datagram; see {{Section 12.2 of QUIC}}.
@@ -246,38 +245,33 @@ TRAIN packets SHOULD be included as the first packet in a datagram.  This is
 necessary in many cases for QUIC versions 1 and 2 because packets with a short
 header cannot precede any other packets.
 
+The payload of a TRAIN packet consists of a single Rate Signal field, described
+in {{rate-signal}}.
 
 ## Rate Signals {#rate-signal}
 
 {:aside}
-> Note: The exact set of rates that are included is subject to negotiation.
-> We should aim to find typical rate limits that are used in real networks
-> and by real applications.
+> Note: The exact structure of the Rate Signal Field such as the size and
+> granularity of the Rate Limit and whether and how to express an average
+> window is likely to change with experience and revisions of this document.
 
-The Rate Signal field of a TRAIN packet is set to 0xTBD when sent by a QUIC
-endpoint.  Receiving value indicates that there is no rate limit in place or
-that the TRAIN protocol is not supported by network elements on the path.
+{{fig-rate-signal}} shows the format of the Rate Signal field.
 
-The values from {{table-rates}} are specified to carry a the corresponding rate
-limit signal.
+~~~ artwork
+Rate Signal {
+  Rate Limit (32)
+  Average Window (32)
+}
+~~~
+{: #fig-rate-signal title="Rate Signal Format"}
 
-| Rate Signal | Rate Limit |
-|:------------|:-----------|
-| 0xTBD       | X Mbps     |
-| 0xTBD       | X Mbps     |
-| 0xTBD       | X Mbps     |
-| 0xTBD       | X Mbps     |
-| 0xTBD       | X Mbps     |
-| 0xTBD       | X Mbps     |
-| 0xTBD       | X Mbps     |
-| 0xTBD       | X Mbps     |
-{: #table-rates title="Table of Rate Signals and Rate Limits"
+Rate Limit is a 32 bit unsigned integer that indicates the maximum sustainable
+throughput through the network element that sets it, expressed in Kilobits per
+second. A value of 0 indicates that there is no rate limit in place. A QUIC
+endpoint sets this value to 0 when sending a TRAIN packet.
 
-All other values are reserved.
-
-{:aside}
-> TODO: Work out how reserved values can be used, if at all.
-
+Average Window, expressed in milliseconds is used to indicate the period over
+which a bitrate might be enforced.
 
 ## Processing TRAIN Packets
 
@@ -319,8 +313,8 @@ QUIC endpoints can enable the use of the TRAIN protocol by sending TRAIN packets
 A network element detects a TRAIN packet by observing that a packet has a QUIC
 long header and the TRAIN protocol version of 0xTBD.
 
-A network element then conditionally replaces the six bits of the Rate Signal
-field with a value of its choosing.
+A network element then conditionally replaces the Rate Signal field with a
+value of its choosing.
 
 A network element might receive a packet that already includes a rate limit
 signal.  If the network element wishes to signal a lower rate limit, they can
@@ -329,24 +323,22 @@ limit.  If the network element wishes to signal a higher rate limit, they leave
 the Rate Signal field alone, preserving the signal from the network element that
 has a lower rate limit policy.
 
-The following pseudocode indicates how a TRAIN packet might be detected and
-replaced.  This assumes a target rate that is preconfigured and a means of
-comparing the rate signal in the packet to the target rate signal.
+The following pseudocode indicates how a network element might detect a TRAIN
+packet and replace an existing rate signal.
 
 ~~~ pseudocode
-target_rate_signal = rate_signal_for(target_rate)
-
 is_long = packet[0] & 0x80 == 0x80
 is_train = compare(packet[1..5], TRAIN_VERSION)
 if is_long and is_train:
-  packet_rate_signal = packet[0] & 0x3f
-  if target_rate_signal.is_lower_than(packet_rate_signal):
-    packet[0] = packet[0] & 0xc0 | target_rate_signal
+  dest_conn_id_len = packet[5]
+  offset = 6 + dest_conn_id_len
+  src_conn_id_len = packet[offset]
+  offset = offset + 1 + src_conn_id_len
+
+  packet_rate = read_uint32(packet[offset : offset + 4])
+  if packet_rate == 0 or target_rate < packet_rate:
+    write_uint32(packet[offset : offset + 4], target_rate)
 ~~~
-
-{:aside}
-> TODO: When defining the signal values, make this comparison easy.
-
 
 ## Providing Opportunities to Apply Rate Limit Signals {#extra-packets}
 
