@@ -58,8 +58,7 @@ informative:
 
 On-path network elements can sometimes be configured to apply rate limits to
 flows that pass them.  This document describes a method for signaling to
-endpoints that rate limiting policies are in force and approximately what that
-rate limit is.
+endpoints that rate limiting policies are in force and  what that rate limit is.
 
 
 --- middle
@@ -273,7 +272,7 @@ endpoint sets this value to 0 when sending a TRONE packet.
 Average Window, expressed in milliseconds is used to indicate the period over
 which a bitrate might be enforced.
 
-## Processing TRONE Packets
+## Enpoint Processing of TRONE Packets
 
 Processing a TRONE packet involves reading the value from the Rate Signal field.
 However, this value MUST NOT be used unless another packet from the same
@@ -320,7 +319,7 @@ A network element might receive a packet that already includes a rate limit
 signal.  If the network element wishes to signal a lower rate limit, they can
 replace the Rate Signal field with a different value that indicates the lower
 limit.  If the network element wishes to signal a higher rate limit, they leave
-the Rate Signal field alone, preserving the signal from the network element that
+the Rate Signal field alone, preserving the signal from the network element thta
 has a lower rate limit policy.
 
 The following pseudocode indicates how a network element might detect a TRONE
@@ -343,16 +342,31 @@ if is_long and is_trone:
 ## Providing Opportunities to Apply Rate Limit Signals {#extra-packets}
 
 Endpoints that wish to offer network elements the option to add rate limit
-markings can send TRONE packets at any time.  This is a decision that a sender
-makes when constructing datagrams, so TRONE packets can be sent as frequently as
-the application requires.
+signals can send TRONE packets at any time.  This is a decision that a sender
+makes when constructing datagrams. It is recommended that endpoints promptly
+send an initial TRONE packet once the peer confirms its willingness to receive
+them.
+
+An endpoint that has not recently sent a TRONE packet MAY treat receipt of one
+from its peer as a trigger to send a TRONE packet in the reverse direction. This
+way a peer that is receiving downlink data can influence the frequency of
+receiving rate signals.
 
 Endpoints MUST send any TRONE packet they send as the first packet of a
 datagram, coalesced with additional packets.  An endpoint that receives and
-discards a TRONE without also successfully processing another packets from the
-same datagram SHOULD ignore any rate limit signal.  Such a datagram might be
-entirely spoofed.
+discards a TRONE packet without also successfully processing another packets
+from the same datagram SHOULD ignore any rate limit signal. Such a datagram
+might be entirely spoofed.
 
+A network element that wishes to signal an updated rate limit waits for the
+next TRONE packet in the desired direction. However, if no TRONE packet
+arrives within a reasonable time, the network element MAY construct its own
+TRONE packet and prepend it to a QUIC packet before forwarding. This process
+requires expanding the UDP datagram containing the original QUIC packet, which
+might cause the datagram to exceed the path MTU. Therefore, a network element
+SHOULD NOT expand UDP datagrams if the combined payload of the TRONE packet and
+the subsequent packets exceeds 1200 bytes, the smallest maximum datagram size
+supported by QUIC versions 1 and 2 (see {{Section 14 of QUIC}}).
 
 ## Feedback To Sender About Signals {#feedback}
 
@@ -580,4 +594,5 @@ Notes:
 # Acknowledgments
 {:numbered="false"}
 
-Jana Iyengar has made significant contributions to the original TRAIN specification.
+Jana Iyengar has made significant contributions to the original TRAIN
+specification that forms the basis for a large part of this document.
