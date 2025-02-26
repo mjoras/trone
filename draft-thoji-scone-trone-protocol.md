@@ -264,7 +264,7 @@ Rate Signal {
 ~~~
 {: #fig-rate-signal title="Rate Signal Format"}
 
-Rate Limit is a 32 bit unsigned integer that indicates the maximum sustainable
+Rate Limit is a 32-bit unsigned integer that indicates the maximum sustainable
 throughput through the network element that sets it, expressed in Kilobits per
 second. A value of 0 indicates that there is no rate limit in place. A QUIC
 endpoint sets this value to 0 when sending a TRONE packet.
@@ -272,7 +272,7 @@ endpoint sets this value to 0 when sending a TRONE packet.
 Average Window, expressed in milliseconds is used to indicate the period over
 which a bitrate might be enforced.
 
-## Enpoint Processing of TRONE Packets
+## Endpoint Processing of TRONE Packets
 
 Processing a TRONE packet involves reading the value from the Rate Signal field.
 However, this value MUST NOT be used unless another packet from the same
@@ -319,7 +319,7 @@ A network element might receive a packet that already includes a rate limit
 signal.  If the network element wishes to signal a lower rate limit, they can
 replace the Rate Signal field with a different value that indicates the lower
 limit.  If the network element wishes to signal a higher rate limit, they leave
-the Rate Signal field alone, preserving the signal from the network element thta
+the Rate Signal field alone, preserving the signal from the network element that
 has a lower rate limit policy.
 
 The following pseudocode indicates how a network element might detect a TRONE
@@ -354,7 +354,7 @@ receiving rate signals.
 
 Endpoints MUST send any TRONE packet they send as the first packet of a
 datagram, coalesced with additional packets.  An endpoint that receives and
-discards a TRONE packet without also successfully processing another packets
+discards a TRONE packet without also successfully processing another packet
 from the same datagram SHOULD ignore any rate limit signal. Such a datagram
 might be entirely spoofed.
 
