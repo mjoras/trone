@@ -1,0 +1,136 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2025-02-27T01:24:40.581238+00:00",
+  "repo": "ietf-wg-scone/trone",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    },
+    {
+      "name": "bike shed",
+      "description": "",
+      "color": "d4c5f9"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDON1dwo86qsnWm",
+      "title": "Throughput advice format",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/1",
+      "state": "OPEN",
+      "author": "ihlar",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "While we're figuring out how to agree on a throughput advice format we could initially include both options:\n\n- A TRAIN Packet always includes a payload field of size N after the SCID. \n- The third most significant bit is set to 1 when a network element updates the payload field. \n- If the bit is not set, the low 5 bits are used to signal a preset rate.",
+      "createdAt": "2025-02-19T16:20:44Z",
+      "updatedAt": "2025-02-20T10:26:30Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "body": "We are back to the composability argument. TRAIN is designed to pick \"the lowest of multiple assertions\". During the discussion, I heard the view that there is no need for that, because in practice there is only one bottleneck and one TRAIN rewriter. I am really not sure about that -- I can really imagine a cascade of NATs, each believing that they are the only one enforcing bandwidth. The rule that you propose implies that any \"rewriter\" must check a specific bit, and if it is set jump to the payload and analyze it. Which implies that all on path agents will need to support \"checking the payload\", in which case I am not sure I see the point of having the information in the top bits.",
+          "createdAt": "2025-02-20T08:15:50Z",
+          "updatedAt": "2025-02-20T08:15:50Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I think it's fine if we eventually converge on a single format / location for the advice (I have my bias already).  \nIn order to get there it might be useful to have both options on the table so we can do some early implementations and measurements.\n\nAlso, with regards to composability. I agree that there are possible cases, but they are probably not that common. A network element that only considers the top bits could simply not send throughput advice if it sees the \"check the payload\" bit. ",
+          "createdAt": "2025-02-20T10:26:28Z",
+          "updatedAt": "2025-02-20T10:26:28Z"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "I_kwDON1dwo86qspaJ",
+      "title": "Name",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/2",
+      "state": "OPEN",
+      "author": "ihlar",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [
+        "bike shed"
+      ],
+      "body": "We have a few options:\n\n1. Keep TRAIN\n2. Find something that fits TRONE\n3. Completely new name, e.g., Throughput Advice Signaling Protocol (TASP)\n\nI'd be fine with any of the above. ",
+      "createdAt": "2025-02-19T16:24:24Z",
+      "updatedAt": "2025-02-19T16:24:24Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": [
+    {
+      "number": 3,
+      "id": "PR_kwDON1dwo86MqU5p",
+      "title": "Transparent Rate Optimization for Network Endpoints (TRONE)",
+      "url": "https://github.com/ietf-wg-scone/trone/pull/3",
+      "state": "OPEN",
+      "author": "ihlar",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "An attempt at TRONE.\r\nWe can bikeshed the name in #2.\r\n\r\nThe PR uses TRAIN as a baseline so that it's easier to review the changes from TRAIN.\r\nNote that this version changes the rate signal field to a field with explicit values, located after the CIDs.\r\nIf we're very unsure about the design tradeoffs we could consider doing both the TRAIN and TRONE ways as discussed in #1.\r\n\r\nThere's also a discussion on how network elements are capable of crafting TRONE packets. ",
+      "createdAt": "2025-02-26T15:03:17Z",
+      "updatedAt": "2025-02-26T15:03:17Z",
+      "baseRepository": "ietf-wg-scone/trone",
+      "baseRefName": "main",
+      "baseRefOid": "b568f3314171b26d5bc38891e21c4f5f714a4c55",
+      "headRepository": "ietf-wg-scone/trone",
+      "headRefName": "advice-format",
+      "headRefOid": "bbf0242c07a922f98a9f27889542dbeb5836e7e9",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    }
+  ]
+}
