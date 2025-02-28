@@ -317,12 +317,10 @@ values of its choosing.
 
 A network element might receive a packet that already includes a rate signal,
 consisting of a rate limit and an average window. The network element replaces
-these fields if it wishes to signal lower values; otherwise, the original
+these fields if it wishes to signal a lower rate limit; otherwise, the original
 values are retained, preserving the signal from the network element with the
-lower policy. A network element may update one field without modifying the
-other. For instance, a network element that wishes to signal a lower rate limit
-and a higher average window replaces the rate limit and leaves the average
-window intact.
+lower policy. A network element that replaces the rate limit SHOULD also replace
+the average window.
 
 The following pseudocode indicates how a network element might detect a TRONE
 packet and replace an existing rate signal.
@@ -337,10 +335,8 @@ if is_long and is_trone:
   offset = offset + 1 + scid_len
 
   packet_rate = read_uint32(packet[offset : offset + 4])
-  packet_aw = read_uint32(packet[offset + 4 : offset + 8])
   if packet_rate == 0 or target_rate < packet_rate:
     write_uint32(packet[offset : offset + 4], target_rate)
-  if packet_aw == 0 or target_aw < packet_aw:
     write_uint32(packet[offset + 4 : offset + 8], target_aw)
 ~~~
 
