@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-27T01:24:40.581238+00:00",
+  "timestamp": "2025-03-02T01:36:32.472929+00:00",
   "repo": "ietf-wg-scone/trone",
   "labels": [
     {
@@ -118,19 +118,100 @@
       "labels": [],
       "body": "An attempt at TRONE.\r\nWe can bikeshed the name in #2.\r\n\r\nThe PR uses TRAIN as a baseline so that it's easier to review the changes from TRAIN.\r\nNote that this version changes the rate signal field to a field with explicit values, located after the CIDs.\r\nIf we're very unsure about the design tradeoffs we could consider doing both the TRAIN and TRONE ways as discussed in #1.\r\n\r\nThere's also a discussion on how network elements are capable of crafting TRONE packets. ",
       "createdAt": "2025-02-26T15:03:17Z",
-      "updatedAt": "2025-02-26T15:03:17Z",
+      "updatedAt": "2025-03-01T07:53:47Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "b568f3314171b26d5bc38891e21c4f5f714a4c55",
       "headRepository": "ietf-wg-scone/trone",
       "headRefName": "advice-format",
-      "headRefOid": "bbf0242c07a922f98a9f27889542dbeb5836e7e9",
+      "headRefOid": "2b0ef2fda3d817beac48d7d2a3b05ae685038a5c",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDON1dwo86d7v0C",
+          "commit": {
+            "abbreviatedOid": "bbf0242"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-28T04:25:32Z",
+          "updatedAt": "2025-02-28T04:25:33Z",
+          "comments": [
+            {
+              "originalPosition": 299,
+              "body": "Even if I thought that this was necessary, this is probably not the right logic to use here.  You are going to independently reduce the rate and window size.  If you don't reduce one, but you reduce the other, that is sometimes going to reduce the actual send rate below your target.  That's another reason I don't like this design.",
+              "createdAt": "2025-02-28T04:25:33Z",
+              "updatedAt": "2025-02-28T04:25:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86d9h0k",
+          "commit": {
+            "abbreviatedOid": "bbf0242"
+          },
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-28T09:02:21Z",
+          "updatedAt": "2025-02-28T09:02:21Z",
+          "comments": [
+            {
+              "originalPosition": 299,
+              "body": "Yeah, composability makes this solution a bit messy. I've been a bit back and forth on this.  My original thinking was to only check the rate and update the window unconditionally:\r\n`if packet_rate == 0 or target_rate < packet_rate:`\r\n`    write_uint32(packet[offset : offset + 4], target_rate)`\r\n`    write_uint32(packet[offset + 4 : offset + 8], target_aw)`\r\n\r\n    \r\nThat could lead to the sending of bursts that are not tolerated by the element further upstream. \r\nIt might be the least messy thing to do with this design though. (And I still think the case with chained elements who wish to signal rates is a rather exceptional one).",
+              "createdAt": "2025-02-28T09:02:21Z",
+              "updatedAt": "2025-02-28T13:10:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86eFfDm",
+          "commit": {
+            "abbreviatedOid": "bbf0242"
+          },
+          "author": "billwuqin",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-01T04:40:27Z",
+          "updatedAt": "2025-03-01T04:40:27Z",
+          "comments": [
+            {
+              "originalPosition": 299,
+              "body": "Thank for getting together baking this draft among authors, thanks for Martin to enage this discussion, I am wondering\r\nIs there possible to leave this as one open issue or split it from PR#3 and move to new PR. \r\nI hope we can have one posted version before submission deadline, let us know what we can do to help move the way forward.",
+              "createdAt": "2025-03-01T04:40:27Z",
+              "updatedAt": "2025-03-01T04:40:27Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86eF4Fl",
+          "commit": {
+            "abbreviatedOid": "bbf0242"
+          },
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-01T07:53:46Z",
+          "updatedAt": "2025-03-01T07:53:47Z",
+          "comments": [
+            {
+              "originalPosition": 299,
+              "body": "The latest commit contains an update in response to Martin's comment, fixing the logic so that average window is not updated separately from updating the rate limit. Which is probably the right thing to do, given this design. \r\n\r\nThere is a larger issue around the structure and placement of the rate signal, something the WG needs to resolve. I would hope that the merged document can contain the latest commit and then we have the broader discussion as an open issue, see #1 for instance. ",
+              "createdAt": "2025-03-01T07:53:46Z",
+              "updatedAt": "2025-03-01T07:53:47Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
