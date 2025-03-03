@@ -221,7 +221,7 @@ TRONE Packet {
   Destination Connection ID (0..2040),
   Source Connection ID Length (8),
   Source Connection ID (0..2040),
-  Rate Signal (64)
+  Rate Signal (TBD)
 }
 ~~~
 {: #fig-trone-packet title="TRONE Packet Format"}
@@ -249,28 +249,8 @@ in {{rate-signal}}.
 
 ## Rate Signals {#rate-signal}
 
-{:aside}
-> The structure and location of the Rate Signal may change in future revisions of
-> this document.
-
-{{fig-rate-signal}} shows the format of the Rate Signal field.
-
-~~~ artwork
-Rate Signal {
-  Rate Limit (32)
-  Average Window (32)
-}
-~~~
-{: #fig-rate-signal title="Rate Signal Format"}
-
-Rate Limit is a 32-bit unsigned integer that indicates the maximum sustainable
-throughput provided by the network element setting it, expressed in kilobits per
-second. A value of 0 indicates no rate limit. A QUIC endpoint sets this value to
-0 when sending a TRONE packet.
-
-Average Window is a 32-bit unsigned integer representing the period, in
-milliseconds, over which a bitrate may be enforced. A value of 0 indicates that
-no averaging period is specified.
+Specification of the the size and format of the Rate Signal field is left for
+future revisions of this document.
 
 ## Endpoint Processing of TRONE Packets
 
@@ -315,12 +295,10 @@ long header and the TRONE protocol version of 0xTBD.
 A network element then conditionally replaces the Rate Signal field with
 values of its choosing.
 
-A network element might receive a packet that already includes a rate signal,
-consisting of a rate limit and an average window. The network element replaces
-these fields if it wishes to signal a lower rate limit; otherwise, the original
-values are retained, preserving the signal from the network element with the
-lower policy. A network element that replaces the rate limit SHOULD also replace
-the average window.
+A network element might receive a packet that already includes a rate signal.
+The network element replaces the rate signal if it wishes to signal a lower
+rate limit; otherwise, the original values are retained, preserving the signal
+from the network element with the lower policy.
 
 The following pseudocode indicates how a network element might detect a TRONE
 packet and replace an existing rate signal.
@@ -333,11 +311,9 @@ if is_long and is_trone:
   offset = 6 + dcid_len
   scid_len = packet[offset]
   offset = offset + 1 + scid_len
-
-  packet_rate = read_uint32(packet[offset : offset + 4])
-  if packet_rate == 0 or target_rate < packet_rate:
-    write_uint32(packet[offset : offset + 4], target_rate)
-    write_uint32(packet[offset + 4 : offset + 8], target_aw)
+  packet_rate = read_rate_signal(packet[offset : offset + rate_signal_size])
+  if target_rate.is_lower_than(packet_rate):
+    write_rate_signal(packet[offset : offset + rate_signal_size], target_rate)
 ~~~
 
 ## Providing Opportunities to Apply Rate Limit Signals {#extra-packets}
