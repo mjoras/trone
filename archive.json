@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-02T01:36:32.472929+00:00",
+  "timestamp": "2025-03-04T01:26:01.444731+00:00",
   "repo": "ietf-wg-scone/trone",
   "labels": [
     {
@@ -111,24 +111,26 @@
       "id": "PR_kwDON1dwo86MqU5p",
       "title": "Transparent Rate Optimization for Network Endpoints (TRONE)",
       "url": "https://github.com/ietf-wg-scone/trone/pull/3",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ihlar",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "An attempt at TRONE.\r\nWe can bikeshed the name in #2.\r\n\r\nThe PR uses TRAIN as a baseline so that it's easier to review the changes from TRAIN.\r\nNote that this version changes the rate signal field to a field with explicit values, located after the CIDs.\r\nIf we're very unsure about the design tradeoffs we could consider doing both the TRAIN and TRONE ways as discussed in #1.\r\n\r\nThere's also a discussion on how network elements are capable of crafting TRONE packets. ",
       "createdAt": "2025-02-26T15:03:17Z",
-      "updatedAt": "2025-03-01T07:53:47Z",
+      "updatedAt": "2025-03-03T17:42:04Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "b568f3314171b26d5bc38891e21c4f5f714a4c55",
       "headRepository": "ietf-wg-scone/trone",
       "headRefName": "advice-format",
-      "headRefOid": "2b0ef2fda3d817beac48d7d2a3b05ae685038a5c",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "946f94dac013f33e4c29520a5bdcb13f877e212c",
+      "closedAt": "2025-03-03T17:42:04Z",
+      "mergedAt": "2025-03-03T17:42:04Z",
+      "mergedBy": "ihlar",
+      "mergeCommit": {
+        "oid": "681b12c446391332da002b4b3cf33a0d51ab3f64"
+      },
       "comments": [],
       "reviews": [
         {
@@ -210,6 +212,19 @@
               "updatedAt": "2025-03-01T07:53:47Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86eOFsQ",
+          "commit": {
+            "abbreviatedOid": "2b0ef2f"
+          },
+          "author": "mjoras",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-03-03T15:35:01Z",
+          "updatedAt": "2025-03-03T15:35:01Z",
+          "comments": []
         }
       ]
     }
