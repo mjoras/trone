@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-04T01:26:01.444731+00:00",
+  "timestamp": "2025-03-06T01:26:25.333818+00:00",
   "repo": "ietf-wg-scone/trone",
   "labels": [
     {
@@ -118,7 +118,7 @@
       "labels": [],
       "body": "An attempt at TRONE.\r\nWe can bikeshed the name in #2.\r\n\r\nThe PR uses TRAIN as a baseline so that it's easier to review the changes from TRAIN.\r\nNote that this version changes the rate signal field to a field with explicit values, located after the CIDs.\r\nIf we're very unsure about the design tradeoffs we could consider doing both the TRAIN and TRONE ways as discussed in #1.\r\n\r\nThere's also a discussion on how network elements are capable of crafting TRONE packets. ",
       "createdAt": "2025-02-26T15:03:17Z",
-      "updatedAt": "2025-03-03T17:42:04Z",
+      "updatedAt": "2025-03-05T13:18:41Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "b568f3314171b26d5bc38891e21c4f5f714a4c55",
@@ -225,6 +225,26 @@
           "createdAt": "2025-03-03T15:35:01Z",
           "updatedAt": "2025-03-03T15:35:01Z",
           "comments": []
+        },
+        {
+          "id": "PRR_kwDON1dwo86enOJN",
+          "commit": {
+            "abbreviatedOid": "bbf0242"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-05T13:18:41Z",
+          "updatedAt": "2025-03-05T13:18:41Z",
+          "comments": [
+            {
+              "originalPosition": 299,
+              "body": "To be clear, I did not approve this document.",
+              "createdAt": "2025-03-05T13:18:41Z",
+              "updatedAt": "2025-03-05T13:18:41Z"
+            }
+          ]
         }
       ]
     }
