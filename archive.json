@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-20T01:26:29.940364+00:00",
+  "timestamp": "2025-03-23T01:40:46.720665+00:00",
   "repo": "ietf-wg-scone/trone",
   "labels": [
     {
@@ -101,6 +101,168 @@
       "body": "We have a few options:\n\n1. Keep TRAIN\n2. Find something that fits TRONE\n3. Completely new name, e.g., Throughput Advice Signaling Protocol (TASP)\n\nI'd be fine with any of the above. ",
       "createdAt": "2025-02-19T16:24:24Z",
       "updatedAt": "2025-02-19T16:24:24Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 4,
+      "id": "I_kwDON1dwo86u3xiG",
+      "title": "Adoption and Business implications of \"A single Rate Signal field\"",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/4",
+      "state": "OPEN",
+      "author": "atiwariphd",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "> The payload of a TRONE packet consists of a single Rate Signal field\n\nI would like to raise an issue to make sure everyone understands the adoption and business implication of the above constraint. \n\nA single rate value does not clearly explain how this rate should be measured and how the two parties (the sender of the rate signal and recipient of the rate signal) should interpret this signal in a consistent fashion. So if two parties (a Communication Service Provider and a Content and Application Provider) want to use this signal, they will have to have offline discussions between their business and technical teams to establish a common way of interpreting this signal. \n\nThis inherently will create barriers to entry for small app startups to use TRONE because typically small startups do not have the luxury of hiring a large partnership and technology ecosystems team to interface with multiple CSPs around the world to figure out how to interpret the \"single rate signal\" coming from their network.\n\nWe need to ask ourselves, do we want IETF to design a protocol that is only usable by large companies with plenty of resources?",
+      "createdAt": "2025-03-20T02:49:44Z",
+      "updatedAt": "2025-03-20T10:44:24Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I think there is a lot of value in simplicity. A single rate signal and guidance in the document around how to interpret the signal makes it easy to reason about. \nDifferent CSPs might measure conformance in different ways, but the associated action to detection of non-conforming traffic would likely be that policing is re-introduced for a flow, or that a lower rate is signaled. Both these actions can be detected and acted upon by the endpoints. ",
+          "createdAt": "2025-03-20T10:44:23Z",
+          "updatedAt": "2025-03-20T10:44:23Z"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "I_kwDON1dwo86u5K3z",
+      "title": "Client initiated TRONE signal (uplink direction) with implicit support for flow detection",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/5",
+      "state": "OPEN",
+      "author": "smishra1200",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "1. Section 2 of the draft shows \"QUIC Sender\", ie, the server initiates the TRONE signal toward the client. This implies that TRONE signal is going to be server initiated. This will result in having the \"network element\" listens to all IP flows in the downlink direction. This is CPU intensive\n2. The authors should consider a design that is independent of SNI-based flow detection\n3. The authors should reconsider this design and allow for CLIENT initiated TRONE signaling (uplink direction) with implicit support for  flow detection\n\nAs a point of reference, section 6 of draft mishra-scone-usercase-00, added following requirement:\nSCONE (aka TRONE) signal MUST be a client-application endpoint initiated to assist the network element (UPF/5G or PGW/4G) with the implicit flow detection\nplease see https://www.ietf.org/archive/id/draft-mishra-scone-usecase-00.html#section-6-1.1.1",
+      "createdAt": "2025-03-20T06:13:47Z",
+      "updatedAt": "2025-03-20T06:45:36Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "TRONE packets are sent by each endpoint individually, so there is opportunity for the client to send an early TRONE packet such that a network element that keeps some flow state can use the presence of a TRONE packet as an indication to not do further DPI and SNI parsing etc. \nThe problem in the current draft version is that endpoints need to indicate support using transport parameters before  sending TRONE packets. The authors have discussed an approach where an opportunistic TRONE \"indication\" can be appended to a QUIC initial packet. The network element can use this information as an indication that the client is willing to receive rate signals. \nAs opposed to \"regular\" TRONE packets, this indication would have to be appended to the end of a QUIC Initial packet.",
+          "createdAt": "2025-03-20T06:43:56Z",
+          "updatedAt": "2025-03-20T06:45:35Z"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "id": "I_kwDON1dwo86u5RKN",
+      "title": "Network Element initiate TRONE packet for Dynamic update of Throughput advise based on changing RAT or subscription plan",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/6",
+      "state": "OPEN",
+      "author": "smishra1200",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Section 7.1 states \"A network element detects a TRONE packet by observing that a packet has a QUIC long header and the TRONE protocol version of 0xTBD.\" A network element then conditionally replaces the Rate Signal field with values of its choosing\"\n\nAbove implies that 'network element\" has to wait/rely on server to originate a TRONE packet for the NE to send advisory bit-rate towards the client.\n\nThis may not work well when we consider a use case such as the mobile user may move from one Radio Access Technology to another (4G to 5G or vice-versa) during an ongoing video session. Ideally, the NE should be in a position to send dynamically an  updated Throughput advisory bit-rate on its own without having to wait for server to originate a TRONE packet.\n\nIn another use case, there can be a need for the NE to send an updated Throughput advisory bitrate, if there is any change in consumption of subscribers' data plan.\n\nThere is also a requirement added in mishra-scone-usecase-00 that calls out:\nDynamic update - \"throughput advice\" MAY change during the ongoing flow and UPF/PGW SHOULD be able to send \"throughput advice\" to client-application-endpoint as soon as possible.\n\nPlease refer to https://www.ietf.org/archive/id/draft-mishra-scone-usecase-00.html#section-6-1.5.1\n\n",
+      "createdAt": "2025-03-20T06:26:49Z",
+      "updatedAt": "2025-03-20T06:54:53Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Right, we do want the ability to signal rate changes in a timely fashion. \nThere are however, a number of ways to achieve this. \nIf we make it cheap enough to update the rate signal field, we can provide guidance to endpoints to generate TRONE packets at a relatively high frequency. One such advice would be to send a new advice for every new application layer \"burst\" such as the transmission of a set of HLS/DASH video segments. \nFurthermore, it is possible for network elements to insert TRONE packets of its own and expand UDP datagrams. Hopefully this will not be needed, but can be a last resort if the TRONE packet frequency is too low. Special care needs to be taken to not run into Path MTU issues, so guidance around not expanding datagrams to sizes larger than 1200 bytes (smallest maximum datagram payload size that needs to be supported for QUIC v1/v2)  could be needed.",
+          "createdAt": "2025-03-20T06:54:52Z",
+          "updatedAt": "2025-03-20T06:54:52Z"
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "id": "I_kwDON1dwo86u5cxB",
+      "title": "Client-side explicit ACK for receipt of TRONE packet",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/7",
+      "state": "OPEN",
+      "author": "smishra1200",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "7.3.  Feedback To Sender About Signals \n\nSuggest that the TRONE draft consider a use case for client to send an explicit ACK to the \"network element\" upon receiving a TRONE packet. Without an explicit ACK, a NE may not know if the client has received the latest Throughput advisory bit-rate. This may help the scenario where a client may not self regulate due to loss of TRONE packet with the most recent Throughput advisory bit-rate.\n\nAdding a requirement that support the ACK from client to the network element. \n\nI-D mishra-scone-usecase-00 listed the following requirement: \n\nClient-application endpoint SHOULD send acknowledgement receipt of throughput advisory signal from the network element using the SCONE (TRONE) signal\n\nhttps://www.ietf.org/archive/id/draft-mishra-scone-usecase-00.html#section-6-1.3.1",
+      "createdAt": "2025-03-20T06:50:46Z",
+      "updatedAt": "2025-03-20T09:37:13Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Not sure if acknowledging the receipt of a specific TRONE packet adds much value. \nEndpoints have already signaled their willingness to participate in the communication by inserting TRONE packets in the first place. \nNetwork elements who care about conformance will need to do measurements, regardless if TRONE packets are acknowledged or not. ",
+          "createdAt": "2025-03-20T09:37:12Z",
+          "updatedAt": "2025-03-20T09:37:12Z"
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "id": "I_kwDON1dwo86vExP6",
+      "title": "Detail interaction with congestion control",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/8",
+      "state": "OPEN",
+      "author": "huitema",
+      "authorAssociation": "NONE",
+      "assignees": [
+        "huitema"
+      ],
+      "labels": [],
+      "body": "This came on repeatedly during the Bangkok IETF session. Congestion control and Trone are complementary, but we need to explain how that complementing works.",
+      "createdAt": "2025-03-21T04:53:23Z",
+      "updatedAt": "2025-03-21T04:53:23Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 9,
+      "id": "I_kwDON1dwo86vE006",
+      "title": "Consider a way to do greasing",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/9",
+      "state": "OPEN",
+      "author": "huitema",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "There is a bit of ambiguity in the specification of \"who uses TRONE\". The original Scone WG appears to have focused on adaptive bit rate video. If we strictly kept that focus, we have a privacy issue. Third parties could observe the presence of Trone headers, and infer that the end to end QUIC connection is engaged in video streaming.\n\nTo reduce the privacy issue, we could adopt a combined strategy, and ask more applications to support Trone, thus weakening the correlation between Trone and video.\n\nWe could also envisage greasing, with applications sending datagrams composed of a Trone packet, followed by a short header and random content. If the peer is not Trone capable, such greasing packets will be discarded because they do done decrypt correctly. But the third parties cannot check the encryption, so they will not be able to distinguish such packets from \"real\" Trone -- i.e., successful greasing.",
+      "createdAt": "2025-03-21T05:04:11Z",
+      "updatedAt": "2025-03-21T05:04:11Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 10,
+      "id": "I_kwDON1dwo86vE3Wm",
+      "title": "Could network elements mangle innocent packets?",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/10",
+      "state": "OPEN",
+      "author": "huitema",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "This is already discussed in the [TRAIN issue 32](https://github.com/martinthomson/train-protocol/issues/32). A Trone intermediary can mistake packets of some other applications for Trone packets. If it reqrite 6 bits, that will cause the packet to be eithre dropped or misinterpreted.\n\nAs explained by @ihlar during the IETF meeting in Bangkok, we need to distinguish:\n\n1. random collision: the end to end application issues some random first bytes that happen to mimic Trone. It will happen at low frequency.\n2. systematic collision: the end to end collision had negotiated some header that happens to Mimic Trone. All packets with that header will be mangled.\n\nThe proposed solution is for intermediaries to keep flow state and stop marking if too many packets of a flow match Trone. We need to develop that.\n",
+      "createdAt": "2025-03-21T05:11:54Z",
+      "updatedAt": "2025-03-21T05:11:54Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 11,
+      "id": "I_kwDON1dwo86vE_RE",
+      "title": "Spoofing attacks against intermediaries",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/11",
+      "state": "OPEN",
+      "author": "huitema",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "In issue #9 we discuss the possibility of greasing TRONE. Greasing is cool for privacy, but the same mechanisms can be used as an attack. Suppose something like:\n\n~~~\n+------------+    +----------+       /---------------\\       +-------------+\n|end point A | -- | Trone NE | ---- ( Big bad Internet) ---- | end point B |\n+------------+    +----------+       \\---------------/       +-------------+\n                                          |\n                                          |\n                                    +-------------+\n                                    | wily hacker |\n                                    +-------------+\n~~~\n\nThe hacker creates Trone packets with:\n\n* IP / UDP header: set IP source to address of B, IP destination to address of A\n* SCONE packet: pick a destination CID and a destination CID\n* 1RTT header: same destination  CID as SCONE packet\n* 1 RTT content: enough random bytes to look plausible\n\nThe attacker needs to know at least a valid address for end point A, so the packets will be routed through the target NE, but after that there are many possibilities:\n\n* an off path attacker can pick random values for the source address of \"B\" and for the CID.\n* an on path attacker can pick pairs of addresses that match existing hosts \"A\" and \"B\" and either random CID or CID copied from observed traffic.\n\nThe possible effects would be:\n\n* trick the NE into \"remembering\" lots of TRONE context, thus consuming lots of memory\n* force the NE to process a vast quantity of TRONE packets, thus consuming lots of resource\n* trick the NE into detecting a \"systematic collision\" (see issue #10) and thus disable TRONE for that flow.\n ",
+      "createdAt": "2025-03-21T05:38:19Z",
+      "updatedAt": "2025-03-21T05:38:19Z",
       "closedAt": null,
       "comments": []
     }
