@@ -386,12 +386,12 @@ indication:
 is_quic = is_quic_datagram(datagram)
 if is_quic and datagram_length > MIN_INITIAL_SIZE:
   last_byte = datagram[datagram_length - 1]
-  
+
   if (last_byte & 0x80) == 0x80:
     version_start = datagram_length - 8
     version_end = datagram_length - 4
     potential_version = datagram[version_start:version_end]
-    
+
     if potential_version == TRONE1_VERSION or potential_version == TRONE2_VERSION:
       note_potential_trone_support(flow_tuple)
 ~~~
