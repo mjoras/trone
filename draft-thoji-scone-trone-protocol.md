@@ -310,7 +310,7 @@ This transport parameter is valid for QUIC versions 1 {{QUIC}} and 2
 transport parameters, and frame types registries established in {{Sections 22.2,
 22.3, and 22.4 of QUIC}}.
 
-# TRONE Indication
+# TRONE Indication {#trone-indication}
 
 QUIC endpoints can signal potential support for TRONE before the completion of
 the QUIC handshake by attaching a TRONE indication packet after a QUIC Initial
@@ -563,7 +563,7 @@ network element applied a rate limit signal.
 
 Network elements can detect potential TRONE support early in a connection by
 looking for TRONE indication packets attached to Initial packets, as described
-in {{TRONE Indication}}. This avoids the need for deep packet inspection of the
+in {{trone-indication}}. This avoids the need for deep packet inspection of the
 TLS handshake.
 
 
