@@ -313,11 +313,16 @@ transport parameters, and frame types registries established in {{Sections 22.2,
 # TRONE Indication {#trone-indication}
 
 QUIC endpoints can signal potential support for TRONE before the completion of
-the QUIC handshake by attaching a TRONE indication packet after a QUIC Initial
-packet in the first UDP datagram. The TRONE indication provides an
+the QUIC handshake by attaching a TRONE indication packet after the last QUIC
+long header packet in the first UDP datagram. The TRONE indication provides an
 opportunistic signal to network elements that the client might support TRONE.
 Network elements can use this as an early hint, but must await confirmation of
 TRONE support by observing a full TRONE packet after the handshake completes.
+
+When sending QUIC short header packets in the first flight, endpoints SHOULD
+send them separately from the first datagram carrying the TRONE indication
+packet, to avoid receivers incapable of decoding TRONE packets from dropping
+the short header packet.
 
 ## TRONE Indication Packet
 
